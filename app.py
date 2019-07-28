@@ -1,5 +1,11 @@
 from flask import Flask
 
+import models
+
+DEBUG = True
+HOST = '0.0.0.0'
+PORT = 5000
+
 app = Flask(__name__)
 
 
@@ -9,4 +15,5 @@ def hello_world():
 
 
 if __name__ == '__main__':
-	app.run()
+	models.initialize()
+	app.run(debug=DEBUG, host=HOST, port=PORT)
