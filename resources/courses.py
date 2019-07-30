@@ -60,12 +60,11 @@ class CourseList(Resource):
 		]
 		return {'courses': courses}
 
+	@marshal_with(course_fields)
 	def post(self):
 		args = self.reqparse.parse_args()
-		models.Course.create(**args)
-		return jsonify({
-			'courses': [{'title': 'Python Basics'}]
-		})
+		course = models.Course.create(**args)
+		return add_reviews(course)
 
 
 class Course(Resource):
