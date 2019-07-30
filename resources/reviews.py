@@ -1,7 +1,20 @@
-from flask import jsonify, Blueprint
-from flask_restful import Resource, Api, reqparse, inputs, fields
+from flask import jsonify, Blueprint, url_for
+from flask_restful import Resource, Api, reqparse, inputs, fields, marshal, marshal_with
 
 import models
+
+review_fields = {
+	'id': fields.Integer,
+	'for_course': fields.String,
+	'rating': fields.Integer,
+	'comment': fields.String(default=''),
+	'created_at': fields.DateTime
+}
+
+
+def add_course(review):
+	review.for_course = url_for('resources.courses.course', id=review.course.id)
+	return review
 
 
 class ReviewList(Resource):
@@ -33,9 +46,17 @@ class ReviewList(Resource):
 		super(ReviewList, self).__init__()
 
 	def get(self):
-		return jsonify({
-			'reviews': [{'course': 1, 'rating': 5}]
-		})
+		reviews = [
+			marshal(add_course(review), review_fields)
+			for review in models.Review.select()
+		]
+		return {'reviews': reviews}
+
+	@marshal_with(review_fields)
+	def post(self):
+		args = self.reqparse.parse_args()
+		review = models.Review.create(**args)
+		return add_course(review)
 
 
 class Review(Resource):
