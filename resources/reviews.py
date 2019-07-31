@@ -59,11 +59,14 @@ class ReviewList(Resource):
 		super(ReviewList, self).__init__()
 
 	def get(self):
-		reviews = [
-			marshal(add_course(review), review_fields)
-			for review in models.Review.select()
-		]
-		return {'reviews': reviews}
+		# reviews = [
+		# 	marshal(add_course(review), review_fields)
+		# 	for review in models.Review.select()
+		# ]
+		# return {'reviews': reviews}
+
+		reviews = [add_course(review) for review in models.Review.select()]
+		return {'reviews': marshal(reviews, review_fields)}
 
 	@marshal_with(review_fields)
 	def post(self):
