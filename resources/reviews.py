@@ -1,5 +1,9 @@
-from flask import jsonify, Blueprint, url_for
-from flask_restful import Resource, Api, reqparse, inputs, fields, marshal, marshal_with
+from flask import (
+	jsonify, Blueprint, abort, url_for
+)
+from flask_restful import (
+	Resource, Api, reqparse, inputs, fields, marshal, marshal_with
+)
 
 import models
 
@@ -10,6 +14,15 @@ review_fields = {
 	'comment': fields.String(default=''),
 	'created_at': fields.DateTime
 }
+
+
+def review_or_404(review_id):
+	try:
+		review = models.Review.get(models.Review.id == review_id)
+	except models.Review.DoesNotExist:
+		abort(404, 'Review %d does not exist' % review_id)
+	else:
+		return review
 
 
 def add_course(review):
@@ -41,7 +54,7 @@ class ReviewList(Resource):
 			default='',
 			location=['form, json']
 		)
-		
+
 		# super().__init__()
 		super(ReviewList, self).__init__()
 
@@ -60,8 +73,9 @@ class ReviewList(Resource):
 
 
 class Review(Resource):
+	@marshal_with(review_fields)
 	def get(self, id):
-		return jsonify({'course': 1, 'rating': 5})
+		return add_course(review_or_404(id))
 
 	def put(self, id):
 		return jsonify({'course': 1, 'rating': 5})
