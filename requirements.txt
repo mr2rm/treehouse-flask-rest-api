@@ -1,3 +1,4 @@
 flask
 flask-restful
 peewee
+argon2-cffi

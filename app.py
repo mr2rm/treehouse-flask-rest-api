@@ -1,12 +1,9 @@
 from flask import Flask
 
 import models
+import config
 from resources.courses import courses_api
 from resources.reviews import reviews_api
-
-DEBUG = True
-HOST = '0.0.0.0'
-PORT = 5000
 
 app = Flask(__name__)
 app.register_blueprint(courses_api)
@@ -20,4 +17,4 @@ def hello_world():
 
 if __name__ == '__main__':
 	models.initialize()
-	app.run(debug=DEBUG, host=HOST, port=PORT)
+	app.run(debug=config.DEBUG, host=config.HOST, port=config.PORT)
