@@ -4,22 +4,13 @@ from peewee import *
 from argon2 import PasswordHasher
 
 DATABASE = SqliteDatabase('db.sqlite3')
-HASHER = PasswordHasher
+HASHER = PasswordHasher()
 
 
 class User(Model):
 	username = CharField(unique=True)
 	email = CharField(unique=True)
 	password = CharField()
-
-	class Meta:
-		database = DATABASE
-
-
-class Course(Model):
-	title = CharField()
-	url = CharField(unique=True)
-	created_at = DateTimeField(default=datetime.datetime.now)
 
 	class Meta:
 		database = DATABASE
@@ -45,11 +36,21 @@ class Course(Model):
 		return HASHER.verify(self.password, password)
 
 
+class Course(Model):
+	title = CharField()
+	url = CharField(unique=True)
+	created_at = DateTimeField(default=datetime.datetime.now)
+
+	class Meta:
+		database = DATABASE
+
+
 class Review(Model):
 	course = ForeignKeyField(Course, related_name='review_set')
 	rating = IntegerField()
 	comment = TextField(default='')
 	created_at = DateTimeField(default=datetime.datetime.now)
+	created_by = ForeignKeyField(User, related_name='review_set')
 
 	class Meta:
 		database = DATABASE
@@ -57,5 +58,5 @@ class Review(Model):
 
 def initialize():
 	DATABASE.connect()
-	DATABASE.create_tables([Course, Review], safe=True)
+	DATABASE.create_tables([User, Course, Review], safe=True)
 	DATABASE.close()

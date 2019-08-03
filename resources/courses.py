@@ -1,5 +1,5 @@
 from flask import (
-	jsonify, Blueprint, abort, url_for
+	Blueprint, abort, url_for
 )
 from flask_restful import (
 	Resource, Api, reqparse, inputs, fields, marshal, marshal_with
